@@ -1,7 +1,6 @@
 
 public sealed class Tackle : Move
 {
-    public Tackle() : base() { }
 
     public override MoveData Data => new MoveData
     (

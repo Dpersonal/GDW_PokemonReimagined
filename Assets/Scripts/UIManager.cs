@@ -8,7 +8,9 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Sprite[] pokeSprites = Resources.LoadAll<Sprite>("PokemonSprites");
+
         SpriteLookup = new Dictionary<string, Sprite>();
+
         foreach (Sprite sprite in pokeSprites)
         {
             SpriteLookup.Add(sprite.name, sprite);

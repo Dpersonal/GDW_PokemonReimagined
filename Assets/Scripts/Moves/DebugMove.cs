@@ -1,7 +1,6 @@
 
 public sealed class DebugMove : Move
 {
-    public DebugMove() : base() { }
 
     public override MoveData Data => new MoveData
     (

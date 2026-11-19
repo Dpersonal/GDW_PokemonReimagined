@@ -2,7 +2,6 @@ using System.Collections.Generic;
 
 public sealed class Pikachu : Pokemon
 {
-    public Pikachu() : base() { }
 
     public override PokeStats Stats => new PokeStats
     (
