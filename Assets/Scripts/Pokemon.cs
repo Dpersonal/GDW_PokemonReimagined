@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class Pokemon
 {
@@ -33,8 +34,14 @@ public abstract class Pokemon
         }
     }
 
+    /// <summary>
+    /// Dereases the pokemon's HP value by a specified amount. <br></br>
+    /// If <c>isHeal</c> is <c>true</c>, increase HP instead.
+    /// </summary>
     public void ModifyHP(int amount, bool isHeal = false)
     {
+        if (amount < 0) Debug.LogWarning("Using a negative value may cause unintended behaviour. If you would like to increase HP, set isHeal to true instead.");
+        
         if (isHeal) HP += amount;
         else HP -= amount;
     }
@@ -42,6 +49,9 @@ public abstract class Pokemon
     // ---------- Pokemon Move Handling ----------
     private Move[] Moves { get; set; }
 
+    /// <summary>
+    /// Returns an array of size 4 containing all of the pokemon's moves. Empty slots will be null.
+    /// </summary>
     public Move[] GetMoves()
     {
         Move[] moves = new Move[] { null, null, null, null };
@@ -52,14 +62,23 @@ public abstract class Pokemon
         return Moves;
     }
 
+    /// <summary>
+    /// Returns one of the pokemon's 4 moves. If the pokemon has less than 4 moves, this value may be null.
+    /// </summary>
     public Move GetMove(int i)
     {
+        if (i > 3 || i < 0) throw new ArgumentException("Trying to get move with index out of range");
+
         return GetMoves()[i];
     }
 
+    /// <summary>
+    /// Set the moves of the pokemon. Moves cannot exceed four.
+    /// </summary>
     public void SetMoves(Move[] moves)
     {
         if (moves.Length > 4) throw new ArgumentException("Pokemon cannot have more than 4 moves");
+
         Moves = new Move[] { null, null, null, null };
         for (int i = 0;i < moves.Length; i++)
         {
@@ -71,13 +90,13 @@ public abstract class Pokemon
     // ---------- CONSTRUCTOR ----------
     public Pokemon()
     {
-        manager = UnityEngine.GameObject.FindGameObjectWithTag("BattleManager").GetComponent<BattleManager>();
+        manager = GameObject.FindGameObjectWithTag("BattleManager").GetComponent<BattleManager>();
         HP = Stats.MaxHP;
     }
 
     protected BattleManager manager;
 
-    // ---------- Status ----------
+    // ---------- Status (WIP) ----------
     public Status Status { get; set; }
     public bool IsConfused { get; private set; }
     public bool IsDead { get => HP <= 0; }

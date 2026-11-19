@@ -16,6 +16,7 @@ public abstract class Move
         {
             if (accuracy > 100 || accuracy < 0) throw new ArgumentException("Accuracy must be between 0 and 100");
             if (power < 0 || powerPoints < 0) throw new ArgumentException("Move values must be positive");
+
             Name = name;
             Power = power;
             Accuracy = accuracy;
@@ -40,11 +41,19 @@ public abstract class Move
     }
 
     // ---------- Move actions ----------
+    /// <summary>
+    /// Performs this move's actions, directed at the specified target pokemon.
+    /// </summary>
     public virtual void GetActions(Pokemon target)
     {
+        // By default, a move will just attack the target.
+        // This method may be overridden by the inheriting class to change its behaviour
         Attack(target);
     }
 
+    /// <summary>
+    /// Attack the enemy pokemon with basic damage calculation
+    /// </summary>
     protected void Attack(Pokemon target)
     {
         target.ModifyHP(manager.CalculateDamage(this, Owner, target, out float effectiveness));
@@ -52,6 +61,7 @@ public abstract class Move
         else if (effectiveness < 1) UnityEngine.Debug.Log("It wasn't very effective...");
     }
 
+    // WIP
     protected void Debuff(Pokemon target, Status status)
     {
         target.Status = status;

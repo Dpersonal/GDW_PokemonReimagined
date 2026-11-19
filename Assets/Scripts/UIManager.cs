@@ -1,7 +1,6 @@
-
 using System.Collections.Generic;
 using UnityEngine;
-
+// WIP WIP WIP
 public class UIManager : MonoBehaviour
 {
     public static Dictionary<string, Sprite> SpriteLookup {  get; private set; }

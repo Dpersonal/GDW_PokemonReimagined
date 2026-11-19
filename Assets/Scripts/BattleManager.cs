@@ -29,12 +29,18 @@ public class BattleManager : MonoBehaviour
         {  1,    1,    1,    0.5f, 1,    1,    1,    1,    1,    1,    1,    1,    2f,   1,    1,    2f,   2f,   0.5f, 1    },// FA
     };
 
+    /// <summary>
+    /// Gets the effectiveness of one type on another type from the type matchup chart.
+    /// </summary>
     public float GetEffectiveness(PokeType attacking,  PokeType defending)
     {
         return Matchup[(int)attacking, (int)defending];
     }
 
-    // Currently only considers type effectiveness, but can easily be expanded
+    /// <summary>
+    /// Calculates damage of a move using a formula. (move power * move effectiveness currently) <br></br>
+    /// <c>effectiveness</c> returns the type matchup multiplier, which can be used to check if the move was super effective.
+    /// </summary>
     public int CalculateDamage(Move move, Pokemon pokeAtk, Pokemon pokeDef, out float effectiveness)
     {
         Move.MoveData moveData = move.Data;
@@ -48,7 +54,7 @@ public class BattleManager : MonoBehaviour
         return (int)(moveData.Power * typeMultiplier);
     }
 
-//---------------- Battle Demonstration ------------------
+//---------------- Battle Demonstration (TEMPORARY) -------
     public Pokemon playerMon;
     public Pokemon cpuMon;
 
@@ -86,6 +92,7 @@ public class BattleManager : MonoBehaviour
     
 }
 
+// Pokemon types
 public enum PokeType
 {
     None,
@@ -109,6 +116,7 @@ public enum PokeType
     Fairy
 }
 
+// Status effects
 public enum Status
 {
     None,
