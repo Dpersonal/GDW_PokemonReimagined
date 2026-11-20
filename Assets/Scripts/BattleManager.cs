@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -49,6 +50,7 @@ public class BattleManager : MonoBehaviour
 
         // effectiveness on type1 * effectiveness on type2
         float typeMultiplier = GetEffectiveness(moveData.Type, statsDef.Type1) * GetEffectiveness(moveData.Type, statsDef.Type2);
+        typeMultiplier = (float)Math.Round(typeMultiplier * 10) / 10;
         effectiveness = typeMultiplier; 
 
         return (int)(moveData.Power * typeMultiplier);
@@ -86,7 +88,7 @@ public class BattleManager : MonoBehaviour
         if (DeathCheck()) return;
         playerMon.GetMove(0).GetActions(cpuMon);
         if (DeathCheck()) return;
-        cpuMon.GetMove(Random.Range(0, 3)).GetActions(playerMon);
+        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
         DeathCheck();
     }
 
@@ -95,7 +97,7 @@ public class BattleManager : MonoBehaviour
         if (DeathCheck()) return;
         playerMon.GetMove(1).GetActions(cpuMon);
         if (DeathCheck()) return;
-        cpuMon.GetMove(Random.Range(0, 3)).GetActions(playerMon);
+        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
         DeathCheck();
     }
 
@@ -104,7 +106,7 @@ public class BattleManager : MonoBehaviour
         if (DeathCheck()) return;
         playerMon.GetMove(2).GetActions(cpuMon);
         if (DeathCheck()) return;
-        cpuMon.GetMove(Random.Range(0, 3)).GetActions(playerMon);
+        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
         DeathCheck();
     }
 
