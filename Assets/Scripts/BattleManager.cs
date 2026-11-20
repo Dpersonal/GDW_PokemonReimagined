@@ -65,9 +65,9 @@ public class BattleManager : MonoBehaviour
     private void Start()
     {
         playerMon = new Pikachu();
-        playerMon.SetMoves(new Move[] { new Tackle(), new DebugMove() });
+        playerMon.SetMoves(new Move[] { new Tackle(), new DebugMove(), new DebugMove2() });
         cpuMon = new Pikachu();
-        cpuMon.SetMoves(new Move[] { new Tackle(), new DebugMove() });
+        cpuMon.SetMoves(new Move[] { new Tackle(), new DebugMove(), new DebugMove2() });
         health1 = h1.GetComponent<HealthBar>();
         health2 = h2.GetComponent<HealthBar>();
         deathText.gameObject.SetActive(false);
@@ -75,8 +75,8 @@ public class BattleManager : MonoBehaviour
 
     private void Update()
     {
-        playerHP.text = $"{playerMon.Stats.Name} HP: {playerMon.HP}";
-        cpuHP.text = $"{cpuMon.Stats.Name} HP: {cpuMon.HP}";
+        playerHP.text = $"{playerMon.Stats.Name} (placeholder) HP: {playerMon.HP}";
+        cpuHP.text = $"{cpuMon.Stats.Name} (placeholder) HP: {cpuMon.HP}";
         health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
         health2.HealthPercentage = cpuMon.HP / (float)cpuMon.Stats.MaxHP;
     }
@@ -86,7 +86,7 @@ public class BattleManager : MonoBehaviour
         if (DeathCheck()) return;
         playerMon.GetMove(0).GetActions(cpuMon);
         if (DeathCheck()) return;
-        cpuMon.GetMove(Random.Range(0, 2)).GetActions(playerMon);
+        cpuMon.GetMove(Random.Range(0, 3)).GetActions(playerMon);
         DeathCheck();
     }
 
@@ -95,7 +95,16 @@ public class BattleManager : MonoBehaviour
         if (DeathCheck()) return;
         playerMon.GetMove(1).GetActions(cpuMon);
         if (DeathCheck()) return;
-        cpuMon.GetMove(Random.Range(0, 2)).GetActions(playerMon);
+        cpuMon.GetMove(Random.Range(0, 3)).GetActions(playerMon);
+        DeathCheck();
+    }
+
+    public void DebugUseMove3()
+    {
+        if (DeathCheck()) return;
+        playerMon.GetMove(2).GetActions(cpuMon);
+        if (DeathCheck()) return;
+        cpuMon.GetMove(Random.Range(0, 3)).GetActions(playerMon);
         DeathCheck();
     }
 
