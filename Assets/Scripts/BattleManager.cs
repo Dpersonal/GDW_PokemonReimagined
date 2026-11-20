@@ -86,7 +86,7 @@ public class BattleManager : MonoBehaviour
         if (DeathCheck()) return;
         playerMon.GetMove(0).GetActions(cpuMon);
         if (DeathCheck()) return;
-        cpuMon.GetMove(Random.Range(0, 4)).GetActions(playerMon);
+        cpuMon.GetMove(Random.Range(0, 2)).GetActions(playerMon);
         DeathCheck();
     }
 
