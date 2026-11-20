@@ -58,7 +58,7 @@ public class BattleManager : MonoBehaviour
     public Pokemon playerMon;
     public Pokemon cpuMon;
 
-    [SerializeField] TextMeshProUGUI playerHP, cpuHP;
+    [SerializeField] TextMeshProUGUI playerHP, cpuHP, deathText;
     [SerializeField] GameObject h1, h2;
     HealthBar health1, health2;
 
@@ -67,29 +67,56 @@ public class BattleManager : MonoBehaviour
         playerMon = new Pikachu();
         playerMon.SetMoves(new Move[] { new Tackle(), new DebugMove() });
         cpuMon = new Pikachu();
+        cpuMon.SetMoves(new Move[] { new Tackle(), new DebugMove() });
         health1 = h1.GetComponent<HealthBar>();
         health2 = h2.GetComponent<HealthBar>();
+        deathText.gameObject.SetActive(false);
     }
 
     private void Update()
     {
         playerHP.text = $"{playerMon.Stats.Name} HP: {playerMon.HP}";
         cpuHP.text = $"{cpuMon.Stats.Name} HP: {cpuMon.HP}";
-        //health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
+        health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
         health2.HealthPercentage = cpuMon.HP / (float)cpuMon.Stats.MaxHP;
     }
 
     public void DebugUseMove1()
     {
+        if (DeathCheck()) return;
         playerMon.GetMove(0).GetActions(cpuMon);
+        if (DeathCheck()) return;
+        cpuMon.GetMove(Random.Range(0, 4)).GetActions(playerMon);
+        DeathCheck();
     }
 
     public void DebugUseMove2()
     {
+        if (DeathCheck()) return;
         playerMon.GetMove(1).GetActions(cpuMon);
+        if (DeathCheck()) return;
+        cpuMon.GetMove(Random.Range(0, 2)).GetActions(playerMon);
+        DeathCheck();
     }
-//--------------------------------------------------------
-    
+
+    public bool DeathCheck()
+    {
+        if(playerMon.IsDead)
+        {
+            deathText.gameObject.SetActive(true);
+            deathText.text = "You Lose!";
+            return true;
+        }
+        if (cpuMon.IsDead)
+        {
+            deathText.gameObject.SetActive(true);
+            deathText.text = "You Win!";
+            return true;
+        }
+        return false;
+    }
+    //--------------------------------------------------------
+
 }
 
 // Pokemon types
