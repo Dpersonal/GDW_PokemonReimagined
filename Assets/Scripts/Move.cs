@@ -57,6 +57,7 @@ public abstract class Move
     protected void Attack(Pokemon target)
     {
         target.ModifyHP(manager.CalculateDamage(this, Owner, target, out float effectiveness));
+        UnityEngine.Debug.Log($"{Owner.Stats.Name} used {Data.Name}!");
         if (effectiveness > 1) UnityEngine.Debug.Log("It was super effective!");
         else if (effectiveness < 1) UnityEngine.Debug.Log("It wasn't very effective...");
     }

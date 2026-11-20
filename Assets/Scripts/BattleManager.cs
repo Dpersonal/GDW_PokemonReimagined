@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -37,6 +38,7 @@ public class BattleManager : MonoBehaviour
         return Matchup[(int)attacking, (int)defending];
     }
 
+
     /// <summary>
     /// Calculates damage of a move using a formula. (move power * move effectiveness currently) <br></br>
     /// <c>effectiveness</c> returns the type matchup multiplier, which can be used to check if the move was super effective.
@@ -49,6 +51,7 @@ public class BattleManager : MonoBehaviour
 
         // effectiveness on type1 * effectiveness on type2
         float typeMultiplier = GetEffectiveness(moveData.Type, statsDef.Type1) * GetEffectiveness(moveData.Type, statsDef.Type2);
+        typeMultiplier = (float)Math.Round(typeMultiplier * 10) / 10;
         effectiveness = typeMultiplier; 
 
         return (int)(moveData.Power * typeMultiplier);
@@ -58,38 +61,74 @@ public class BattleManager : MonoBehaviour
     public Pokemon playerMon;
     public Pokemon cpuMon;
 
-    [SerializeField] TextMeshProUGUI playerHP, cpuHP;
+    [SerializeField] TextMeshProUGUI playerHP, cpuHP, deathText;
     [SerializeField] GameObject h1, h2;
     HealthBar health1, health2;
 
     private void Start()
     {
         playerMon = new Pikachu();
-        playerMon.SetMoves(new Move[] { new Tackle(), new DebugMove() });
+        playerMon.SetMoves(new Move[] { new Tackle(), new DebugMove(), new DebugMove2() });
         cpuMon = new Pikachu();
+        cpuMon.SetMoves(new Move[] { new Tackle(), new DebugMove(), new DebugMove2() });
         health1 = h1.GetComponent<HealthBar>();
         health2 = h2.GetComponent<HealthBar>();
+        deathText.gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        playerHP.text = $"{playerMon.Stats.Name} HP: {playerMon.HP}";
-        cpuHP.text = $"{cpuMon.Stats.Name} HP: {cpuMon.HP}";
-        //health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
+        playerHP.text = $"{playerMon.Stats.Name} (placeholder) HP: {playerMon.HP}";
+        cpuHP.text = $"{cpuMon.Stats.Name} (placeholder) HP: {cpuMon.HP}";
+        health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
         health2.HealthPercentage = cpuMon.HP / (float)cpuMon.Stats.MaxHP;
     }
 
     public void DebugUseMove1()
     {
+        if (DeathCheck()) return;
         playerMon.GetMove(0).GetActions(cpuMon);
+        if (DeathCheck()) return;
+        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
+        DeathCheck();
     }
 
     public void DebugUseMove2()
     {
+        if (DeathCheck()) return;
         playerMon.GetMove(1).GetActions(cpuMon);
+        if (DeathCheck()) return;
+        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
+        DeathCheck();
     }
-//--------------------------------------------------------
-    
+
+    public void DebugUseMove3()
+    {
+        if (DeathCheck()) return;
+        playerMon.GetMove(2).GetActions(cpuMon);
+        if (DeathCheck()) return;
+        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
+        DeathCheck();
+    }
+
+    public bool DeathCheck()
+    {
+        if(playerMon.IsDead)
+        {
+            deathText.gameObject.SetActive(true);
+            deathText.text = "You Lose!";
+            return true;
+        }
+        if (cpuMon.IsDead)
+        {
+            deathText.gameObject.SetActive(true);
+            deathText.text = "You Win!";
+            return true;
+        }
+        return false;
+    }
+    //--------------------------------------------------------
+
 }
 
 // Pokemon types
