@@ -38,6 +38,7 @@ public class BattleManager : MonoBehaviour
         return Matchup[(int)attacking, (int)defending];
     }
 
+
     /// <summary>
     /// Calculates damage of a move using a formula. (move power * move effectiveness currently) <br></br>
     /// <c>effectiveness</c> returns the type matchup multiplier, which can be used to check if the move was super effective.
