@@ -93,6 +93,11 @@ public abstract class Pokemon
         HP = Stats.MaxHP;
     }
 
+    public Pokemon(Move[] moves) : this()
+    {
+        SetMoves(moves);
+    }
+
     protected BattleManager manager;
 
     // ---------- Status (WIP) ----------

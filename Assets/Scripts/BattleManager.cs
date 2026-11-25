@@ -57,7 +57,57 @@ public class BattleManager : MonoBehaviour
         return (int)(moveData.Power * typeMultiplier);
     }
 
-//---------------- Battle Demonstration (TEMPORARY) -------
+    // ------------- Pokemon Teams --------------
+    private Pokemon[] _playerTeam = new Pokemon[6];
+    public Pokemon[] PlayerTeam
+    {
+        get { return _playerTeam; }
+        set 
+        {
+            if (value.Length > 6)
+            {
+                throw new ArgumentException("Pokemon Team may not exceed 6 Pokemon");
+            }
+            _playerTeam = value; 
+        }
+    }
+
+    public Pokemon ActivePlayerMon { get; set; }
+
+    public void AddToPlayerTeam(Pokemon pokemon, int i)
+    {
+        if (i > 5 || i < 0) throw new ArgumentOutOfRangeException($"Invalid team slot: {i}");
+
+        PlayerTeam[i] = pokemon;
+    }
+
+
+    private Pokemon[] _enemyTeam = new Pokemon[6];
+    public Pokemon[] EnemyTeam
+    {
+        get{ return _enemyTeam; }
+        set 
+        {
+            if (value.Length > 6)
+            {
+                throw new ArgumentException("Pokemon Team may not exceed 6 Pokemon");
+            }
+            _enemyTeam = value; 
+        }
+    }
+
+    public Pokemon ActiveEnemyMon { get; set; }
+
+    public void AddToEnemyTeam(Pokemon pokemon, int i)
+    {
+        if (i > 5 || i < 0) throw new ArgumentOutOfRangeException($"Invalid team slot: {i}");
+
+        EnemyTeam[i] = pokemon;
+    }
+    // -----------------------------------------
+
+
+    //---------------- Battle Demonstration (TEMPORARY) -------
     public Pokemon playerMon;
     public Pokemon cpuMon;
 
@@ -80,8 +130,10 @@ public class BattleManager : MonoBehaviour
     {
         playerHP.text = $"{playerMon.Stats.Name} (placeholder) HP: {playerMon.HP}";
         cpuHP.text = $"{cpuMon.Stats.Name} (placeholder) HP: {cpuMon.HP}";
-        health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
-        health2.HealthPercentage = cpuMon.HP / (float)cpuMon.Stats.MaxHP;
+        //health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
+        health1.SetHealthAnimated(playerMon.HP / (float)playerMon.Stats.MaxHP);
+        //health2.HealthPercentage = cpuMon.HP / (float)cpuMon.Stats.MaxHP;
+        health2.SetHealthAnimated(cpuMon.HP / (float)cpuMon.Stats.MaxHP);
     }
 
     public void DebugUseMove1()
