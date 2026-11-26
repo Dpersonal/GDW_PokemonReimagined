@@ -17,12 +17,14 @@ player selects move
 perform turn
 1. switch player menu to empty
 2. If player chose to switch:
+	a. switch player menu to pokemon switch
+	b. wait for player to choose pokemon
 	a. switch active pokemon and change onscreen pokemon
 3. If player chose a move:
 	a. check what rng is required to perform move
 	b. perform qtes to get rng
 4. give rng and selected moves to battleManager
-5. battlemanager performs turn using moves and rng and returns turn result in struct
+5. battlemanager performs turn using moves and rng and returns turn result in struct(?)
 6. use data in turnresult struct to perform animations
 7. if battle over, do appropriate battle over flow
 8. start pre turn

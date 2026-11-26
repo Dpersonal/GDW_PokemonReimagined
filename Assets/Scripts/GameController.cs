@@ -4,6 +4,7 @@ public class GameController : MonoBehaviour
 {
     private BattleManager BattleManager;
     private UIManager UIManager;
+    private QTEManager QTEManager;
     private bool waitingForInput = false;
 
     private void InitializeBattle()
@@ -35,6 +36,7 @@ public class GameController : MonoBehaviour
     {
         BattleManager = GetComponent<BattleManager>();
         UIManager = GetComponent<UIManager>();
+        QTEManager = GetComponent<QTEManager>();
 
     }
 
@@ -42,6 +44,7 @@ public class GameController : MonoBehaviour
     {
         InitializeBattle();
         TurnFlow();
+        Debug.Log("This goes when the function waits");
         UIManager.PrintText("    This is a test! I hope it works!   ");
     }
 
@@ -62,6 +65,10 @@ public class GameController : MonoBehaviour
             await Awaitable.NextFrameAsync();
         }
         Debug.Log("Finished animation!");
+
+        Debug.Log("requesting qte");
+        float result = await QTEManager.PerformQTE();
+        Debug.Log($"Got RNG: {result}");
     }
 
     private enum Button

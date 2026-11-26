@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -115,6 +116,22 @@ public class BattleManager : MonoBehaviour
         EnemyTeam[i] = pokemon;
     }
     // -----------------------------------------
+
+    public readonly struct BattleAction
+    {
+        public enum ActionType
+        {
+            Miss,
+            PhysAttack,
+            SpecAttack,
+            Debuff
+        }
+
+    }
+    public IEnumerable<BattleAction> PerformTurn(int playerMove, int enemyMove, float[] playerRNG)
+    {
+        yield break;
+    }
 
 
     //---------------- Battle Demonstration (TEMPORARY) -------
