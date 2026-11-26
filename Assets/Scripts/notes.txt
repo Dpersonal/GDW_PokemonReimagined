@@ -1,0 +1,28 @@
+What needs to happen in a turn
+
+battle start
+1. switch player menu to empty
+2. init pokemon teams internally
+3. switch onscreen pokemon to active
+4. start pre turn
+
+pre turn
+1. any status effects need to resolve
+2. if status requires rng, perform qtes
+3. check if any mon died to status and switch if they did
+4. switch player menu to fight/switch and wait for input
+
+player selects move
+
+perform turn
+1. switch player menu to empty
+2. If player chose to switch:
+	a. switch active pokemon and change onscreen pokemon
+3. If player chose a move:
+	a. check what rng is required to perform move
+	b. perform qtes to get rng
+4. give rng and selected moves to battleManager
+5. battlemanager performs turn using moves and rng and returns turn result in struct
+6. use data in turnresult struct to perform animations
+7. if battle over, do appropriate battle over flow
+8. start pre turn

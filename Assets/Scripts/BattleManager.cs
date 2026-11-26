@@ -57,6 +57,16 @@ public class BattleManager : MonoBehaviour
         return (int)(moveData.Power * typeMultiplier);
     }
 
+    public void StartTurn()
+    {
+        // doSomething
+    }
+
+    public void EndTurn()
+    {
+        // maybe not necessary?
+    }
+
     // ------------- Pokemon Teams --------------
     private Pokemon[] _playerTeam = new Pokemon[6];
     public Pokemon[] PlayerTeam
@@ -128,12 +138,12 @@ public class BattleManager : MonoBehaviour
 
     private void Update()
     {
-        playerHP.text = $"{playerMon.Stats.Name} (placeholder) HP: {playerMon.HP}";
-        cpuHP.text = $"{cpuMon.Stats.Name} (placeholder) HP: {cpuMon.HP}";
+        playerHP.text = $"{playerMon.Stats.Name} HP: {playerMon.HP}";
+        cpuHP.text = $"{cpuMon.Stats.Name} HP: {cpuMon.HP}";
         //health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
-        health1.SetHealthAnimated(playerMon.HP / (float)playerMon.Stats.MaxHP);
+        //health1.SetHealthAnimated(playerMon.HP / (float)playerMon.Stats.MaxHP);
         //health2.HealthPercentage = cpuMon.HP / (float)cpuMon.Stats.MaxHP;
-        health2.SetHealthAnimated(cpuMon.HP / (float)cpuMon.Stats.MaxHP);
+        //health2.SetHealthAnimated(cpuMon.HP / (float)cpuMon.Stats.MaxHP);
     }
 
     public void DebugUseMove1()

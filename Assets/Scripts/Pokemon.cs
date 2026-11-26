@@ -108,7 +108,7 @@ public abstract class Pokemon
     public void Confuse()
     {
         IsConfused = true;
-        UnityEngine.Debug.Log($"{Stats.Name} was confused!");
+        Debug.Log($"{Stats.Name} was confused!");
         // play animation/display message whatever
     }
 }
