@@ -87,16 +87,19 @@ public abstract class Pokemon
     }
 
     // ---------- CONSTRUCTOR ----------
-    public Pokemon()
+    public Pokemon(bool isEnemy = false)
     {
         manager = GameObject.FindGameObjectWithTag("BattleManager").GetComponent<BattleManager>();
         HP = Stats.MaxHP;
+        IsEnemy = isEnemy;
     }
 
-    public Pokemon(Move[] moves) : this()
+    public Pokemon(Move[] moves, bool isEnemy = false) : this(isEnemy)
     {
         SetMoves(moves);
     }
+
+    public bool IsEnemy { get; }
 
     protected BattleManager manager;
 
@@ -105,6 +108,7 @@ public abstract class Pokemon
     public bool IsConfused { get; private set; }
     public bool IsDead { get => HP <= 0; }
 
+    // may not be used
     public void Confuse()
     {
         IsConfused = true;

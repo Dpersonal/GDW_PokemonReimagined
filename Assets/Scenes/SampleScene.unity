@@ -1662,17 +1662,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &654108298 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6988378472882923204, guid: d63b15cfb91cd8d4d8a373a1a6cb3d82, type: 3}
-  m_PrefabInstance: {fileID: 655085722}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &654108300 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9193571901938178632, guid: d63b15cfb91cd8d4d8a373a1a6cb3d82, type: 3}
   m_PrefabInstance: {fileID: 655085722}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 654108298}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6740f1b0a75565e4f95c7bd4bc8210e1, type: 3}
@@ -3158,7 +3153,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -165, y: -26}
+  m_AnchoredPosition: {x: -158.6, y: -29.2}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1513871786
@@ -3247,7 +3242,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -129.64186, y: 0, z: -160.30403, w: 0}
+  m_margin: {x: -129.64186, y: 0, z: -158.70586, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -3412,6 +3407,7 @@ GameObject:
   - component: {fileID: 1634889649}
   - component: {fileID: 1634889652}
   - component: {fileID: 1634889651}
+  - component: {fileID: 1634889653}
   m_Layer: 0
   m_Name: GameController
   m_TagString: BattleManager
@@ -3431,11 +3427,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96c1655809c659044803345d5d33c1ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
-  playerHP: {fileID: 1808610070}
-  cpuHP: {fileID: 591780554}
-  deathText: {fileID: 2058144181}
-  h1: {fileID: 1995741596}
-  h2: {fileID: 654108298}
 --- !u!4 &1634889650
 Transform:
   m_ObjectHideFlags: 0
@@ -3479,6 +3470,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 210977ec309f33e479f4393c86feeae6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameController
+--- !u!114 &1634889653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634889648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c715cd86db54e55499a2bade9efb2761, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::QTEManager
 --- !u!1 &1808610068
 GameObject:
   m_ObjectHideFlags: 0
@@ -3763,17 +3766,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
   m_Delegates: []
---- !u!1 &1995741596 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6988378472882923204, guid: d63b15cfb91cd8d4d8a373a1a6cb3d82, type: 3}
-  m_PrefabInstance: {fileID: 1857391589740891370}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1995741598 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9193571901938178632, guid: d63b15cfb91cd8d4d8a373a1a6cb3d82, type: 3}
   m_PrefabInstance: {fileID: 1857391589740891370}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1995741596}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6740f1b0a75565e4f95c7bd4bc8210e1, type: 3}

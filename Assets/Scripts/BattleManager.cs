@@ -117,24 +117,40 @@ public class BattleManager : MonoBehaviour
     }
     // -----------------------------------------
 
-    public readonly struct BattleAction
+    
+    // simplified version since moves will only have two rng rolls
+    // can be improved if needed
+    // GameController will call this method and perform appropriate animations as it recieves BattleActions
+    public IEnumerable<BattleAction> PerformTurn(int playerChoice, int enemyChoice, float[] playerRNG)
     {
-        public enum ActionType
+        // also need to handle switching
+        Move playerMove = ActivePlayerMon.GetMove(playerChoice);
+        Move enemyMove = ActiveEnemyMon.GetMove(enemyChoice);
+        Queue<bool> RNGresult = new Queue<bool>();
+        foreach (float f in playerRNG)
         {
-            Miss,
-            PhysAttack,
-            SpecAttack,
-            Debuff
+            float a = 5f - (playerMove.Data.Accuracy / 100f * 5f);
+            float probability = Mathf.Pow(f, a);
+            if(UnityEngine.Random.value <= probability) RNGresult.Enqueue(true);
+            else RNGresult.Enqueue(false);
         }
-
-    }
-    public IEnumerable<BattleAction> PerformTurn(int playerMove, int enemyMove, float[] playerRNG)
-    {
+        // do player move if hit, else return miss action
+        if (RNGresult.Dequeue()) {
+            foreach (BattleAction action in playerMove.GetActions(ActiveEnemyMon, RNGresult.Dequeue()))
+            {
+                yield return action;
+            }
+        }
+        else
+        {
+            yield return new BattleAction(BattleAction.ActionType.Miss);
+        }
         yield break;
     }
 
 
     //---------------- Battle Demonstration (TEMPORARY) -------
+    /*
     public Pokemon playerMon;
     public Pokemon cpuMon;
 
@@ -206,8 +222,37 @@ public class BattleManager : MonoBehaviour
         }
         return false;
     }
+    */
     //--------------------------------------------------------
 
+}
+
+public readonly struct BattleAction
+{
+    public enum ActionType
+    {
+        Miss,
+        Attack,
+        Debuff
+    }
+    public Effectiveness Effectiveness { get; }
+    public ActionType Type { get; }
+    public bool PerformedByEnemy { get; }
+
+    public BattleAction(ActionType type, Effectiveness effectiveness = Effectiveness.Default, bool performedByEnemy = false)
+    {
+        Type = type;
+        Effectiveness = effectiveness;
+        PerformedByEnemy = performedByEnemy;
+    }
+}
+
+public enum Effectiveness
+{
+    Default,
+    SuperEffective,
+    NotEffective,
+    NoEffect
 }
 
 // Pokemon types

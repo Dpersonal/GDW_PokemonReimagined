@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 public abstract class Move
 {
@@ -8,13 +9,15 @@ public abstract class Move
         public string Name { get; }
         public int Power { get; }
         public int Accuracy { get; }
+        public Status Status { get; }
+        public int StatusAccuracy { get; }
         public int PowerPoints { get; }
         public PokeType Type { get; }
 
         // Constructor
-        public MoveData(int power, int accuracy, int powerPoints, PokeType type, string name = "Move")
+        public MoveData(int power, int accuracy, int powerPoints, PokeType type, string name = "Move", Status status = Status.None, int statusAccuracy = 100)
         {
-            if (accuracy > 100 || accuracy < 0) throw new ArgumentException("Accuracy must be between 0 and 100");
+            if (accuracy > 100 || accuracy < 0 || statusAccuracy > 100 || statusAccuracy < 0) throw new ArgumentException("Accuracy must be between 0 and 100");
             if (power < 0 || powerPoints < 0) throw new ArgumentException("Move values must be positive");
 
             Name = name;
@@ -22,6 +25,8 @@ public abstract class Move
             Accuracy = accuracy;
             PowerPoints = powerPoints;
             Type = type;
+            Status = status;
+            StatusAccuracy = statusAccuracy;
         }
 
         public override string ToString() => $"Move name: {Name}, Power: {Power}, Accuracy: {Accuracy}, PP: {PowerPoints}";
@@ -44,27 +49,36 @@ public abstract class Move
     /// <summary>
     /// Performs this move's actions, directed at the specified target pokemon.
     /// </summary>
-    public virtual void GetActions(Pokemon target)
+    public virtual IEnumerable<BattleAction> GetActions(Pokemon target, bool statusHit)
     {
         // By default, a move will just attack the target.
         // This method may be overridden by the inheriting class to change its behaviour
-        Attack(target);
+        yield return Attack(target);
+        if(Data.Status != Status.None && statusHit)
+        {
+            yield return Debuff(target, Data.Status);
+        }
+        yield break;
     }
 
     /// <summary>
     /// Attack the enemy pokemon with basic damage calculation
     /// </summary>
-    protected void Attack(Pokemon target)
+    protected BattleAction Attack(Pokemon target)
     {
         target.ModifyHP(manager.CalculateDamage(this, Owner, target, out float effectiveness));
-        UnityEngine.Debug.Log($"{Owner.Stats.Name} used {Data.Name}!");
-        if (effectiveness > 1) UnityEngine.Debug.Log("It was super effective!");
-        else if (effectiveness < 1) UnityEngine.Debug.Log("It wasn't very effective...");
+        Effectiveness e;
+        if (effectiveness == 0) e = Effectiveness.NoEffect;
+        else if (effectiveness > 1) e = Effectiveness.SuperEffective;
+        else if (effectiveness < 1) e = Effectiveness.NotEffective;
+        else e = Effectiveness.Default;
+        return new BattleAction(BattleAction.ActionType.Attack, e, Owner.IsEnemy);
     }
 
     // WIP
-    protected void Debuff(Pokemon target, Status status)
+    protected BattleAction Debuff(Pokemon target, Status status)
     {
         target.Status = status;
+        return new BattleAction(BattleAction.ActionType.Debuff, performedByEnemy: Owner.IsEnemy);
     }
 }
