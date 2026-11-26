@@ -84,11 +84,8 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void Move1() { PressedButton(Button.Move1); }
-    public void Move2() { PressedButton(Button.Move2); }
-    public void Move3() { PressedButton(Button.Move3); }
-    public void Move4() { PressedButton(Button.Move4); }
-    public void Fight() { PressedButton(Button.Fight); }
-    public void Switch() { PressedButton(Button.Switch); }
-    public void Back() { PressedButton(Button.Back); }
+    public void PressedButton(int i)
+    {
+        PressedButton((Button)i);
+    }
 }
