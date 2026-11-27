@@ -123,20 +123,100 @@ public class BattleManager : MonoBehaviour
     // GameController will call this method and perform appropriate animations as it recieves BattleActions
     public IEnumerable<BattleAction> PerformTurn(int playerChoice, int enemyChoice, float[] playerRNG)
     {
-        // also need to handle switching
-        Move playerMove = ActivePlayerMon.GetMove(playerChoice);
-        Move enemyMove = ActiveEnemyMon.GetMove(enemyChoice);
-        Queue<bool> RNGresult = new Queue<bool>();
-        foreach (float f in playerRNG)
+        // also need to handle switching (choice = 4 - 5)
+
+        bool playerMovesFirst = true; // check which move priority is higher, or pokemon speed if they are equal
+        if(playerMovesFirst)
         {
-            float a = 5f - (playerMove.Data.Accuracy / 100f * 5f);
-            float probability = Mathf.Pow(f, a);
-            if(UnityEngine.Random.value <= probability) RNGresult.Enqueue(true);
-            else RNGresult.Enqueue(false);
+            foreach (BattleAction action in PlayerMovesFirst(playerChoice, enemyChoice, playerRNG))
+            {
+                yield return action;
+            }
         }
+        else
+        {
+            foreach (BattleAction action in EnemyMovesFirst(playerChoice, enemyChoice, playerRNG))
+            {
+                yield return action;
+            }
+        }
+            yield break;
+    }
+
+    private IEnumerable<BattleAction> PlayerMovesFirst(int playerChoice, int enemyChoice, float[] playerRNG)
+    {
+        if (playerChoice < 4)
+        {
+            Move playerMove = ActivePlayerMon.GetMove(playerChoice);
+            Queue<bool> playerRNGresult = new Queue<bool>();
+            for (int i = 0; i < playerMove.GetAccuracy().Length; i++)
+            {
+                float probability = CalculateAccuracy(playerRNG[i], playerMove.GetAccuracy(i));
+                if (UnityEngine.Random.value <= probability) playerRNGresult.Enqueue(true);
+                else playerRNGresult.Enqueue(false);
+            }
+            foreach (BattleAction action in PerformMove(playerMove, ActiveEnemyMon, playerRNGresult))
+            {
+                yield return action;
+            }
+        }
+        if (enemyChoice < 4)
+        {
+            Move enemyMove = ActiveEnemyMon.GetMove(enemyChoice);
+            Queue<bool> enemyRNGresult = new Queue<bool>();
+            for (int i = 0; i < enemyMove.GetAccuracy().Length; i++)
+            {
+                float probability = enemyMove.GetAccuracy(i) / 100f;
+                if (UnityEngine.Random.value <= probability) enemyRNGresult.Enqueue(true);
+                else enemyRNGresult.Enqueue(false);
+            }
+            foreach (BattleAction action in PerformMove(enemyMove, ActiveEnemyMon, enemyRNGresult))
+            {
+                yield return action;
+            }
+        }
+    }
+
+    private IEnumerable<BattleAction> EnemyMovesFirst(int playerChoice, int enemyChoice, float[] playerRNG)
+    {
+        if (playerChoice < 4)
+        {
+            Move playerMove = ActivePlayerMon.GetMove(playerChoice);
+            Queue<bool> playerRNGresult = new Queue<bool>();
+            for (int i = 0; i < playerMove.GetAccuracy().Length; i++)
+            {
+                float probability = CalculateAccuracy(playerRNG[i], playerMove.GetAccuracy(i));
+                if (UnityEngine.Random.value <= probability) playerRNGresult.Enqueue(true);
+                else playerRNGresult.Enqueue(false);
+            }
+            foreach (BattleAction action in PerformMove(playerMove, ActiveEnemyMon, playerRNGresult))
+            {
+                yield return action;
+            }
+        }
+        if (enemyChoice < 4)
+        {
+            Move enemyMove = ActiveEnemyMon.GetMove(enemyChoice);
+            Queue<bool> enemyRNGresult = new Queue<bool>();
+            for (int i = 0; i < enemyMove.GetAccuracy().Length; i++)
+            {
+                float probability = enemyMove.GetAccuracy(i) / 100f;
+                if (UnityEngine.Random.value <= probability) enemyRNGresult.Enqueue(true);
+                else enemyRNGresult.Enqueue(false);
+            }
+            foreach (BattleAction action in PerformMove(enemyMove, ActiveEnemyMon, enemyRNGresult))
+            {
+                yield return action;
+            }
+        }
+    }
+
+    private IEnumerable<BattleAction> PerformMove(Move move, Pokemon target, Queue<bool> RNGresult)
+    {
         // do player move if hit, else return miss action
-        if (RNGresult.Dequeue()) {
-            foreach (BattleAction action in playerMove.GetActions(ActiveEnemyMon, RNGresult.Dequeue()))
+        if (RNGresult.Dequeue())
+        {
+            foreach (BattleAction action in move.GetActions(target, RNGresult.Dequeue())) // perform move
             {
                 yield return action;
             }
@@ -145,7 +225,16 @@ public class BattleManager : MonoBehaviour
         {
             yield return new BattleAction(BattleAction.ActionType.Miss);
         }
-        yield break;
+    }
+
+    /// <summary>
+    /// x is a value from 0 to 1, accruacy is a value from 0 to 100. Accuracy is converted to a
+    /// range of 5 to 0, x is raised to the power of that value. The result is returned.
+    /// </summary>
+    private float CalculateAccuracy(float x, float accuracy)
+    {
+        float a = 5f - (accuracy / 100f * 5f); // Accuracy converted from 0-100 to 5-0
+        return Mathf.Pow(x, a);
     }
 
 
@@ -233,7 +322,8 @@ public readonly struct BattleAction
     {
         Miss,
         Attack,
-        Debuff
+        Debuff, 
+        Switch
     }
     public Effectiveness Effectiveness { get; }
     public ActionType Type { get; }

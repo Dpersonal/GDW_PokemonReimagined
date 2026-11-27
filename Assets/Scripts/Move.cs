@@ -37,6 +37,18 @@ public abstract class Move
     public abstract MoveData Data { get; }
     public Pokemon Owner { get; set; }
 
+    public float[] GetAccuracy()
+    {
+        return new float[] { Data.Accuracy, Data.StatusAccuracy };
+    }
+
+    public float GetAccuracy(int i)
+    {
+        float[] acc = GetAccuracy();
+        if (i >= acc.Length) throw new ArgumentOutOfRangeException($"No accuracy found at index {i}");
+        return acc[i];
+    }
+
     protected BattleManager manager;
 
     // ---------- CONSTRUCTOR ----------
