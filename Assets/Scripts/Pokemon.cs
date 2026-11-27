@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Pokemon
@@ -88,23 +87,34 @@ public abstract class Pokemon
     }
 
     // ---------- CONSTRUCTOR ----------
-    public Pokemon()
+    public Pokemon(bool isEnemy = false)
     {
         manager = GameObject.FindGameObjectWithTag("BattleManager").GetComponent<BattleManager>();
         HP = Stats.MaxHP;
+        IsEnemy = isEnemy;
     }
+
+    public Pokemon(Move[] moves, bool isEnemy = false) : this(isEnemy)
+    {
+        SetMoves(moves);
+    }
+
+    public bool IsEnemy { get; }
 
     protected BattleManager manager;
 
     // ---------- Status (WIP) ----------
     public Status Status { get; set; }
-    public bool IsConfused { get; private set; }
+    public bool IsConfused { get; set; }
     public bool IsDead { get => HP <= 0; }
+    public int FreezeAndSleepCounter { get; set; }
+    public int BadPoisonCounter { get; set; }
 
+    // may not be used
     public void Confuse()
     {
         IsConfused = true;
-        UnityEngine.Debug.Log($"{Stats.Name} was confused!");
+        Debug.Log($"{Stats.Name} was confused!");
         // play animation/display message whatever
     }
 }

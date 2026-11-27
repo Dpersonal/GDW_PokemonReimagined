@@ -8,6 +8,6 @@ public sealed class DebugMove : Move
         accuracy: 100,
         powerPoints: 10,
         type: PokeType.Ground,
-        name: "Debug"
+        name: "SuperEffectiveMove"
     );
 }
