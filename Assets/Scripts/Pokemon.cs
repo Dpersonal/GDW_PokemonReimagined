@@ -105,8 +105,10 @@ public abstract class Pokemon
 
     // ---------- Status (WIP) ----------
     public Status Status { get; set; }
-    public bool IsConfused { get; private set; }
+    public bool IsConfused { get; set; }
     public bool IsDead { get => HP <= 0; }
+    public int FreezeAndSleepCounter { get; set; }
+    public int BadPoisonCounter { get; set; }
 
     // may not be used
     public void Confuse()

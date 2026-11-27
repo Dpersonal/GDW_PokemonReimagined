@@ -28,7 +28,6 @@ public class GameController : MonoBehaviour
         BattleManager.ActiveEnemyMon = BattleManager.EnemyTeam[0];
 
         // UIManager.SwitchActive(Pokemon pokemon, bool IsEnemy = false);
-        BattleManager.StartTurn();
         waitingForInput = true;
     }
 
@@ -43,7 +42,7 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         InitializeBattle();
-        TurnFlow();
+        TurnFlow(0);
         Debug.Log("This goes when the function waits");
         UIManager.PrintText("    This is a test! I hope it works!   ");
     }
@@ -56,7 +55,12 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private async void TurnFlow()
+    /// <summary>
+    /// Performs the turn based on the player's selection. 
+    /// 
+    /// Sends the move to the battle manager, and performs animations based on the result
+    /// </summary>
+    private async void TurnFlow(int playerChoice)
     {
         Debug.Log("Starting Animation!");
         UIManager.PlayerBar.SetHealthAnimated(0.5f);
@@ -77,6 +81,8 @@ public class GameController : MonoBehaviour
         Move2,
         Move3,
         Move4,
+        Pokemon1,
+        Pokemon2, 
         Fight,
         Switch,
         Back
@@ -86,7 +92,25 @@ public class GameController : MonoBehaviour
         if (!waitingForInput) return;
         switch (button)
         {
+            case Button.Move1:
+            case Button.Move2:
+            case Button.Move3:
+            case Button.Move4:
+            case Button.Pokemon1:
+            case Button.Pokemon2:
+                TurnFlow((int) button); 
+                break;
+            case Button.Fight:
+                // UIManager: switch to move select menu
+                break;
+            case Button.Switch:
+                // UIManager: switch to pokemon select menu
+                break;
+            case Button.Back:
+                // UIManager: switch to fight/switch menu
+                break;
             default:
+                Debug.LogWarning($"No functionality found for button {button}");
                 break;
         }
     }

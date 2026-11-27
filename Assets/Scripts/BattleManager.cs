@@ -7,7 +7,7 @@ public class BattleManager : MonoBehaviour
 {
     // The entire Type Matchup Chart
     // [Attacking, Defending]
-    public static readonly float[,] Matchup =
+    private static readonly float[,] Matchup =
     {
         // N/A   NO    GR    FI    WA    EL    BU    FL    RO    PO    GD    IC    FT    PS    GH    DR    DA    ST    FA
         {  1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1    },// N/A
@@ -30,6 +30,12 @@ public class BattleManager : MonoBehaviour
         {  1,    1,    1,    0.5f, 0.5f, 0.5f, 1,    1,    2f,   1,    1,    2f,   1,    1,    1,    1,    1,    0.5f, 2f   },// ST
         {  1,    1,    1,    0.5f, 1,    1,    1,    1,    1,    1,    1,    1,    2f,   1,    1,    2f,   2f,   0.5f, 1    },// FA
     };
+
+    private static readonly float SkipTurnChance = 0.25f;
+    private static readonly float BurnDamage = 0.0625f;
+    private static readonly float PoisonDamage = 0.125f;
+
+
 
     /// <summary>
     /// Gets the effectiveness of one type on another type from the type matchup chart.
@@ -58,15 +64,8 @@ public class BattleManager : MonoBehaviour
         return (int)(moveData.Power * typeMultiplier);
     }
 
-    public void StartTurn()
-    {
-        // doSomething
-    }
+    
 
-    public void EndTurn()
-    {
-        // maybe not necessary?
-    }
 
     // ------------- Pokemon Teams --------------
     private Pokemon[] _playerTeam = new Pokemon[6];
@@ -118,11 +117,25 @@ public class BattleManager : MonoBehaviour
     // -----------------------------------------
 
     
+
+    public int RequiredRNG(int moveChoice)
+    {
+        int required = 0;
+        if (ActivePlayerMon.Status == Status.Paralysis || ActivePlayerMon.Status == Status.Freeze)
+            required++;
+        foreach (int i in ActivePlayerMon.GetMove(moveChoice).GetAccuracy())
+        {
+            if (i < 100) required++;
+        }
+        return required;
+    }
+
     // simplified version since moves will only have two rng rolls
     // can be improved if needed
     // GameController will call this method and perform appropriate animations as it recieves BattleActions
     public IEnumerable<BattleAction> PerformTurn(int playerChoice, int enemyChoice, float[] playerRNG)
     {
+        // choice -1 = didn't do anything
         // also need to handle switching (choice = 4 - 5)
 
         bool playerMovesFirst = true; // check which move priority is higher, or pokemon speed if they are equal
@@ -140,7 +153,28 @@ public class BattleManager : MonoBehaviour
                 yield return action;
             }
         }
-            yield break;
+
+        yield break;
+    }
+
+    public IEnumerable<BattleAction> EndTurn(Pokemon pokemon)
+    {
+        if (pokemon.Status == Status.Burn)
+        {
+            pokemon.ModifyHP((int)(pokemon.Stats.MaxHP / BurnDamage));
+            yield return new BattleAction(BattleAction.ActionType.TakeDamage, performedByEnemy: pokemon.IsEnemy);
+        }
+        if (pokemon.Status == Status.Poison)
+        {
+            pokemon.ModifyHP((int)(pokemon.Stats.MaxHP / PoisonDamage));
+            yield return new BattleAction(BattleAction.ActionType.TakeDamage, performedByEnemy: pokemon.IsEnemy);
+        }
+        if (pokemon.Status == Status.BadPoison)
+        {
+            pokemon.ModifyHP((int)(pokemon.Stats.MaxHP / (pokemon.BadPoisonCounter / 16f)));
+            pokemon.BadPoisonCounter++;
+            yield return new BattleAction(BattleAction.ActionType.TakeDamage, performedByEnemy: pokemon.IsEnemy);
+        }
     }
 
     private IEnumerable<BattleAction> PlayerMovesFirst(int playerChoice, int enemyChoice, float[] playerRNG)
@@ -151,7 +185,8 @@ public class BattleManager : MonoBehaviour
             Queue<bool> playerRNGresult = new Queue<bool>();
             for (int i = 0; i < playerMove.GetAccuracy().Length; i++)
             {
-                float probability = CalculateAccuracy(playerRNG[i], playerMove.GetAccuracy(i));
+                float probability = CalculateProbability(playerRNG[i], playerMove.GetAccuracy(i));
+                Debug.Log($"Probability {i}: {probability}");
                 if (UnityEngine.Random.value <= probability) playerRNGresult.Enqueue(true);
                 else playerRNGresult.Enqueue(false);
             }
@@ -185,7 +220,8 @@ public class BattleManager : MonoBehaviour
             Queue<bool> playerRNGresult = new Queue<bool>();
             for (int i = 0; i < playerMove.GetAccuracy().Length; i++)
             {
-                float probability = CalculateAccuracy(playerRNG[i], playerMove.GetAccuracy(i));
+                float probability = CalculateProbability(playerRNG[i], playerMove.GetAccuracy(i));
+                Debug.Log($"Probability {i}: {probability}");
                 if (UnityEngine.Random.value <= probability) playerRNGresult.Enqueue(true);
                 else playerRNGresult.Enqueue(false);
             }
@@ -216,6 +252,7 @@ public class BattleManager : MonoBehaviour
         // do player move if hit, else return miss action
         if (RNGresult.Dequeue())
         {
+            Debug.Log("Move Hit!");
             foreach (BattleAction action in move.GetActions(target, RNGresult.Dequeue())) // perform move
             {
                 yield return action;
@@ -223,96 +260,21 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("Move Missed!");
             yield return new BattleAction(BattleAction.ActionType.Miss);
         }
     }
 
     /// <summary>
+    /// Calculates the probability of rng succeeding based on the chance of the event and the performance of the qte. <br></br>
     /// x is a value from 0 to 1, accruacy is a value from 0 to 100. Accuracy is converted to a
     /// range of 5 to 0, x is raised to the power of that value. The result is returned.
     /// </summary>
-    private float CalculateAccuracy(float x, float accuracy)
+    private float CalculateProbability(float x, float accuracy)
     {
         float a = 5f - (accuracy / 100f * 5f); // Accuracy converted from 0-100 to 5-0
         return Mathf.Pow(x, a);
     }
-
-
-    //---------------- Battle Demonstration (TEMPORARY) -------
-    /*
-    public Pokemon playerMon;
-    public Pokemon cpuMon;
-
-    [SerializeField] TextMeshProUGUI playerHP, cpuHP, deathText;
-    [SerializeField] GameObject h1, h2;
-    HealthBar health1, health2;
-
-    private void Start()
-    {
-        playerMon = new Pikachu();
-        playerMon.SetMoves(new Move[] { new Tackle(), new DebugMove(), new DebugMove2() });
-        cpuMon = new Pikachu();
-        cpuMon.SetMoves(new Move[] { new Tackle(), new DebugMove(), new DebugMove2() });
-        health1 = h1.GetComponent<HealthBar>();
-        health2 = h2.GetComponent<HealthBar>();
-        deathText.gameObject.SetActive(false);
-    }
-
-    private void Update()
-    {
-        playerHP.text = $"{playerMon.Stats.Name} HP: {playerMon.HP}";
-        cpuHP.text = $"{cpuMon.Stats.Name} HP: {cpuMon.HP}";
-        //health1.HealthPercentage = playerMon.HP / (float)playerMon.Stats.MaxHP;
-        //health1.SetHealthAnimated(playerMon.HP / (float)playerMon.Stats.MaxHP);
-        //health2.HealthPercentage = cpuMon.HP / (float)cpuMon.Stats.MaxHP;
-        //health2.SetHealthAnimated(cpuMon.HP / (float)cpuMon.Stats.MaxHP);
-    }
-
-    public void DebugUseMove1()
-    {
-        if (DeathCheck()) return;
-        playerMon.GetMove(0).GetActions(cpuMon);
-        if (DeathCheck()) return;
-        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
-        DeathCheck();
-    }
-
-    public void DebugUseMove2()
-    {
-        if (DeathCheck()) return;
-        playerMon.GetMove(1).GetActions(cpuMon);
-        if (DeathCheck()) return;
-        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
-        DeathCheck();
-    }
-
-    public void DebugUseMove3()
-    {
-        if (DeathCheck()) return;
-        playerMon.GetMove(2).GetActions(cpuMon);
-        if (DeathCheck()) return;
-        cpuMon.GetMove(UnityEngine.Random.Range(0, 3)).GetActions(playerMon);
-        DeathCheck();
-    }
-
-    public bool DeathCheck()
-    {
-        if(playerMon.IsDead)
-        {
-            deathText.gameObject.SetActive(true);
-            deathText.text = "You Lose!";
-            return true;
-        }
-        if (cpuMon.IsDead)
-        {
-            deathText.gameObject.SetActive(true);
-            deathText.text = "You Win!";
-            return true;
-        }
-        return false;
-    }
-    */
-    //--------------------------------------------------------
 
 }
 
@@ -323,7 +285,10 @@ public readonly struct BattleAction
         Miss,
         Attack,
         Debuff, 
-        Switch
+        DebuffCured,
+        Switch,
+        DoNothing,
+        TakeDamage
     }
     public Effectiveness Effectiveness { get; }
     public ActionType Type { get; }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class Move
 {
@@ -68,7 +69,9 @@ public abstract class Move
         yield return Attack(target);
         if(Data.Status != Status.None && statusHit)
         {
-            yield return Debuff(target, Data.Status);
+            Debug.Log("Status Hit!");
+            if (CanDebuff(target, Data.Status))
+                yield return Debuff(target, Data.Status);
         }
         yield break;
     }
@@ -90,7 +93,33 @@ public abstract class Move
     // WIP
     protected BattleAction Debuff(Pokemon target, Status status)
     {
+        if (status == Status.Poison && target.Status == Status.Poison)
+        {
+            status = Status.BadPoison;
+            target.BadPoisonCounter = 1;
+        }
         target.Status = status;
+        if (status == Status.Freeze) target.FreezeAndSleepCounter = 3;
+        if (status == Status.Sleep) target.FreezeAndSleepCounter = UnityEngine.Random.Range(1, 4);
         return new BattleAction(BattleAction.ActionType.Debuff, performedByEnemy: Owner.IsEnemy);
+    }
+
+    protected bool CanDebuff(Pokemon target, Status status)
+    {
+        if (target.Status != Status.None || (target.Status == Status.Poison && status != Status.Poison)) return false;
+        switch (status)
+        {
+            case Status.Poison:
+            case Status.BadPoison:
+                return (target.Stats.Type1 != PokeType.Poison || target.Stats.Type2 != PokeType.Poison);
+            case Status.Burn:
+                return (target.Stats.Type1 != PokeType.Fire || target.Stats.Type2 != PokeType.Fire);
+            case Status.Paralysis:
+                return (target.Stats.Type1 != PokeType.Electric || target.Stats.Type2 != PokeType.Electric);
+            case Status.Freeze:
+                return (target.Stats.Type1 != PokeType.Ice || target.Stats.Type2 != PokeType.Ice);
+            default:
+                return true;
+        }
     }
 }
