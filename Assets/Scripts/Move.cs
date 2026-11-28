@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Move
@@ -13,10 +14,11 @@ public abstract class Move
         public Status Status { get; }
         public int StatusAccuracy { get; }
         public int PowerPoints { get; }
+        public string Description { get; }
         public PokeType Type { get; }
 
         // Constructor
-        public MoveData(int power, int accuracy, int powerPoints, PokeType type, string name = "Move", Status status = Status.None, int statusAccuracy = 100)
+        public MoveData(int power, int accuracy, int powerPoints, PokeType type, string name = "Move", Status status = Status.None, int statusAccuracy = 100, string description = "")
         {
             if (accuracy > 100 || accuracy < 0 || statusAccuracy > 100 || statusAccuracy < 0) throw new ArgumentException("Accuracy must be between 0 and 100");
             if (power < 0 || powerPoints < 0) throw new ArgumentException("Move values must be positive");
@@ -28,6 +30,7 @@ public abstract class Move
             Type = type;
             Status = status;
             StatusAccuracy = statusAccuracy;
+            Description = description;
         }
 
         public override string ToString() => $"Move name: {Name}, Power: {Power}, Accuracy: {Accuracy}, PP: {PowerPoints}";

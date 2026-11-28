@@ -6,6 +6,7 @@ public sealed class DebugMove2 : Move
             accuracy: 100,
             powerPoints: 10,
             type: PokeType.Flying,
-            name: "NotEffectiveMove"
+            name: "NotEffectiveMove",
+            description: "Oh no :("
         );
 }

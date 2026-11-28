@@ -8,7 +8,8 @@ public sealed class Tackle : Move
         accuracy: 100, 
         powerPoints: 35, 
         type: PokeType.Normal,
-        name: "Tackle"
+        name: "Tackle",
+        description: "Tackle your enemies!"
     );
 
 }
